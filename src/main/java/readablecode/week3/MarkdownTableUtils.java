@@ -3,6 +3,8 @@ package readablecode.week3;
 import java.util.List;
 import java.util.Objects;
 
+import com.google.common.base.Strings;
+
 public class MarkdownTableUtils {
 	// TODO3 : find the code to be replace with the method used at TODO7
 	// refer OAOO principal
@@ -20,14 +22,16 @@ public class MarkdownTableUtils {
 	 * Returns the string of table which has empty rows as Markdown table syntax.
 	 * length of captions for separator cell and empty cell is same with their
 	 * header captions
-	 * 
-	 * 
+	 *
+	 *
 	 * @param headerRowCaptions the captions for header row
 	 * @param emptyRowCount     the number of empty rows.
 	 * @return the string of table which has empty rows as Markdown table
-	 * 
-	 * 
+	 * @throws NullPointerException     if headerRowCaptions is null
+	 * @throws IllegalArgumentException if headerRowCaptions is empty
+	 * @throws IllegalArgumentException if emptyRowCount is less than 1
 	 */
+
 	public static String createEmptyTable(List<String> headerRowCaptions, int emptyRowCount) {
 		// validate args
 		Objects.requireNonNull(headerRowCaptions, "headerCaptions must not be null");
@@ -37,9 +41,30 @@ public class MarkdownTableUtils {
 		if (emptyRowCount < 1) {
 			throw new IllegalArgumentException("emptyRowCount must be greater than or equal to 1");
 		}
+		String headerRows = createHeaderRows(headerRowCaptions);
+		String emptyRows = createEmptyRows(headerRowCaptions, emptyRowCount);
 
+		return headerRows + emptyRows;
+
+	}
+
+	//空行を作るメソッド
+	private static String createEmptyRows(List<String> headerRowCaptions, int emptyRowCount) {
 		StringBuilder markdownTable = new StringBuilder();
-		// create line for header row captions
+		for (int i = 0; i < emptyRowCount; i++) {
+			for (String e : headerRowCaptions) {
+				markdownTable.append("|");
+				markdownTable.append(Strings.repeat(" ", e.length()));
+			}
+			markdownTable.append("|");
+			markdownTable.append(System.lineSeparator());
+		}
+		return markdownTable.toString();
+	}
+
+	// create line for header row captions
+	private static String createHeaderRows(List<String> headerRowCaptions) {
+		StringBuilder markdownTable = new StringBuilder();
 		for (String e : headerRowCaptions) {
 			markdownTable.append("|");
 			markdownTable.append(e);
@@ -50,36 +75,12 @@ public class MarkdownTableUtils {
 		// create line for header row separator
 		for (String e : headerRowCaptions) {
 			markdownTable.append("|");
-
-			// TODO2 : use com.google.common.base.Strings to replace the followings:13.4
-			// target code to replace with Strings begin
-			for (int i = 0; i < e.length(); i++) {
-				markdownTable.append("-");
-			}
-			// target code to replace with guava end
-			// how to find suitable method in framework
-			// 1.open {@link com.google.common.base.Strings} and check outline (control + o)
-			// and read javadoc
-			// 2.check junit TestCase on github
+			markdownTable.append(Strings.repeat("-", e.length()));
 
 		}
 		markdownTable.append("|");
 		markdownTable.append(System.lineSeparator());
-
-		// create lines for empty rows
-		for (int i = 0; i < emptyRowCount; i++) {
-			for (String e : headerRowCaptions) {
-				markdownTable.append("|");
-				for (int j = 0; j < e.length(); j++) {
-					markdownTable.append(" ");
-				}
-			}
-			markdownTable.append("|");
-			markdownTable.append(System.lineSeparator());
-		}
-
 		return markdownTable.toString();
-
 	}
 
 }
